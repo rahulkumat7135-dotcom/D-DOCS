@@ -1858,7 +1858,7 @@ function renderResults(box,results,title){
 const FMT_OPTS='<option value="jpeg">JPG / JPEG</option><option value="png">PNG</option><option value="webp">WebP</option><option value="avif" data-avif>AVIF</option><option value="gif">GIF</option><option value="bmp">BMP</option><option value="ico">ICO (icon)</option><option value="svgtrace">SVG — vector trace (logos, icons)</option><option value="svg">SVG — embedded image</option><option value="pdf">PDF</option>';
 const MAXD='<option value="0">Original size</option><option value="4096">4096 px</option><option value="2560">2560 px</option><option value="1920">1920 px (Full HD)</option><option value="1280">1280 px (HD)</option><option value="1024">1024 px</option><option value="800">800 px</option><option value="512">512 px</option>';
 const TOOLS={
-convert:{title:'Universal Converter',nav:'Convert',icon:'convert',grad:'#2563ff,#19a7ff',desc:'JPG, PNG, WebP, AVIF, GIF, BMP, ICO, SVG, PDF — kisi bhi format se kisi bhi format me.',accept:'image/*,.svg,.heic,.heif,.pdf,application/pdf',multiple:true,run:'Convert now',
+convert:{title:'Universal Converter',nav:'Convert',icon:'convert',grad:'#2563ff,#19a7ff',desc:'JPG, PNG, WebP, AVIF, GIF, BMP, ICO, SVG, PDF — kisi bhi format se kisi bhi format me.',accept:'image/*,.svg,.heic,.heif,.pdf,application/pdf',multiple:true,btn:'Convert now',
  hint:'Images / PDF / SVG',
  opts:id=>'<div class="f"><label>Convert to</label><select id="'+id+'-o-fmt">'+FMT_OPTS+'</select></div><div class="f" id="'+id+'-qf"><label>Quality</label><div class="rg"><input type="range" id="'+id+'-o-q" min="10" max="100" value="90" data-u="%"><b class="rv">90%</b></div></div><div class="f"><label>Max size (resize)</label><select id="'+id+'-o-max">'+MAXD+'</select></div><div class="f"><label>PDF input page quality</label><select id="'+id+'-o-ps"><option value="1.5">Normal (150 DPI)</option><option value="2" selected>High (200 DPI)</option><option value="3">Ultra (300 DPI)</option></select></div><div class="f" id="'+id+'-cf"><label>&nbsp;</label><label class="ck"><input type="checkbox" id="'+id+'-o-combine"> Combine all into one PDF</label></div>',
  mount(id){const f=$('#'+id+'-o-fmt'),upd=()=>{const v=f.value;$('#'+id+'-qf').classList.toggle('dim',!['jpeg','webp','avif','pdf'].includes(v));$('#'+id+'-cf').classList.toggle('dim',v!=='pdf')};f.onchange=upd;upd()},
@@ -1870,7 +1870,7 @@ convert:{title:'Universal Converter',nav:'Convert',icon:'convert',grad:'#2563ff,
    for(const it of items){if(comb)parts.push(await jpegPart(it.canvas,q));else{const b=await encodeCanvas(it.canvas,fmt,q);out.push({name:it.name+'.'+EXT[fmt],blob:b,before:items.length===1&&!isPdf(f)?f.size:0})}}}
   if(comb&&parts.length){H.p(.95,'Building PDF…');out.push({name:'Dialln-combined.pdf',blob:await buildPdf(parts,{size:'a4',margin:18}),note:parts.length+' pages'})}
   return out}},
-imgcomp:{title:'Image Compressor',nav:'Compress',icon:'compress',grad:'#22d3ee,#3b82f6',desc:'Photo ka size kam karo — quality ya exact target KB set karo.',accept:'image/*,.svg,.heic,.heif',multiple:true,run:'Compress images',
+imgcomp:{title:'Image Compressor',nav:'Compress',icon:'compress',grad:'#22d3ee,#3b82f6',desc:'Photo ka size kam karo — quality ya exact target KB set karo.',accept:'image/*,.svg,.heic,.heif',multiple:true,btn:'Compress images',
  opts:id=>'<div class="f"><label>Output format</label><select id="'+id+'-o-fmt"><option value="auto">Auto (best)</option><option value="jpeg">JPG</option><option value="webp">WebP (smallest)</option><option value="png">PNG (lossless)</option></select></div><div class="f"><label>Quality</label><div class="rg"><input type="range" id="'+id+'-o-q" min="10" max="100" value="70" data-u="%"><b class="rv">70%</b></div></div><div class="f"><label>Max dimension</label><select id="'+id+'-o-max">'+MAXD+'</select></div><div class="f"><label>Target size in KB (optional)</label><input type="number" id="'+id+'-o-t" min="5" placeholder="e.g. 100"></div>',
  async run(files,H){const out=[],fm=H.v('fmt'),q=H.v('q')/100,maxd=+H.v('max'),t=(+H.v('t')||0)*1024;
   for(let i=0;i<files.length;i++){const f=files[i];H.p(i/files.length,'Compressing '+f.name);const L=await loadImg(f);let c=drawToCanvas(L.img,L.w,L.h,maxd);URL.revokeObjectURL(L.url);
@@ -1879,7 +1879,7 @@ imgcomp:{title:'Image Compressor',nav:'Compress',icon:'compress',grad:'#22d3ee,#
    if(blob.size>=f.size&&!maxd&&!t){blob=f;note='Original already optimal';fmt=null}
    out.push({name:baseName(f.name)+'-compressed.'+(fmt?EXT[fmt]:(f.name.split('.').pop())),blob,before:f.size,note})}
   return out}},
-pdfcomp:{title:'PDF Compressor',nav:'PDF Size',icon:'file',grad:'#fb923c,#f43f5e',desc:'Bade PDF ko chhota karo — email ya upload limit ke liye perfect.',accept:'.pdf,application/pdf',multiple:true,run:'Compress PDFs',
+pdfcomp:{title:'PDF Compressor',nav:'PDF Size',icon:'file',grad:'#fb923c,#f43f5e',desc:'Bade PDF ko chhota karo — email ya upload limit ke liye perfect.',accept:'.pdf,application/pdf',multiple:true,btn:'Compress PDFs',
  opts:id=>'<div class="f"><label>Compression level</label><select id="'+id+'-o-lv"><option value="high">Maximum (smallest size)</option><option value="med" selected>Balanced (recommended)</option><option value="low">Light (best quality)</option><option value="lossless">Lossless (keeps text selectable)</option></select></div>',
  note:'Maximum / Balanced / Light pages ko images me convert karke compress karte hain — text select nahi hoga. Lossless sirf structure optimize karta hai (gain kam).',
  async run(files,H){const out=[],L={high:[1.1,.5],med:[1.5,.65],low:[2.1,.8]}[H.v('lv')],lv=H.v('lv');
@@ -1889,7 +1889,7 @@ pdfcomp:{title:'PDF Compressor',nav:'PDF Size',icon:'file',grad:'#fb923c,#f43f5e
    let note=lv==='lossless'?'':'Text is now image-based';if(blob.size>=f.size){blob=f;note='Original already smaller — kept as is'}
    out.push({name:baseName(f.name)+'-compressed.pdf',blob,before:f.size,note})}
   return out}},
-unlock:{title:'PDF Password Remover',nav:'Unlock',icon:'unlock',grad:'#34d399,#06b6d4',desc:'Password-protected PDF ko unlock karo (aapko password pata hona chahiye).',accept:'.pdf,application/pdf',multiple:true,run:'Remove password',
+unlock:{title:'PDF Password Remover',nav:'Unlock',icon:'unlock',grad:'#34d399,#06b6d4',desc:'Password-protected PDF ko unlock karo (aapko password pata hona chahiye).',accept:'.pdf,application/pdf',multiple:true,btn:'Remove password',
  opts:id=>'<div class="f"><label>PDF password</label><input type="password" id="'+id+'-o-pw" placeholder="Leave empty if only edit/print restricted" autocomplete="off"></div><div class="f"><label>Output quality</label><select id="'+id+'-o-sc"><option value="1.6">Standard</option><option value="2.2" selected>High</option><option value="3">Ultra</option></select></div>',
  note:'Ye tool sirf unhi PDFs ke liye hai jinka password aapke paas hai. Unlocked copy page-images se banti hai (text select nahi hoga).',
  async run(files,H){const out=[],pw=H.v('pw'),sc=+H.v('sc');
@@ -1898,11 +1898,11 @@ unlock:{title:'PDF Password Remover',nav:'Unlock',icon:'unlock',grad:'#34d399,#0
    const pdf=await openPdf(f,pw||'');const blob=await rasterRebuild(pdf,sc,.92,p=>H.p((i+p)/files.length,f.name+' — '+Math.round(p*100)+'%'));
    out.push({name:baseName(f.name)+'-unlocked.pdf',blob,note:pdf.numPages+' pages',before:0})}
   return out}},
-img2pdf:{title:'Images to PDF',nav:'Img→PDF',icon:'image',grad:'#f472b6,#f43f5e',desc:'Kai photos ko ek PDF me jodo — order set karo, page size chuno.',accept:'image/*,.svg,.heic,.heif',multiple:true,reorder:true,run:'Create PDF',
+img2pdf:{title:'Images to PDF',nav:'Img→PDF',icon:'image',grad:'#f472b6,#f43f5e',desc:'Kai photos ko ek PDF me jodo — order set karo, page size chuno.',accept:'image/*,.svg,.heic,.heif',multiple:true,reorder:true,btn:'Create PDF',
  opts:id=>'<div class="f"><label>Page size</label><select id="'+id+'-o-sz"><option value="a4">A4</option><option value="letter">Letter</option><option value="legal">Legal</option><option value="fit">Fit to image</option></select></div><div class="f"><label>Orientation</label><select id="'+id+'-o-or"><option value="auto">Auto</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div><div class="f"><label>Margin</label><select id="'+id+'-o-m"><option value="0">None</option><option value="18" selected>Small</option><option value="36">Large</option></select></div><div class="f"><label>Image quality</label><div class="rg"><input type="range" id="'+id+'-o-q" min="30" max="100" value="85" data-u="%"><b class="rv">85%</b></div></div>',
  async run(files,H){const parts=[];for(let i=0;i<files.length;i++){H.p(i/files.length,'Adding '+files[i].name);const L=await loadImg(files[i]);parts.push(await jpegPart(drawToCanvas(L.img,L.w,L.h,3000),H.v('q')/100));URL.revokeObjectURL(L.url)}
   H.p(.95,'Building PDF…');return[{name:'Dialln-images.pdf',blob:await buildPdf(parts,{size:H.v('sz'),orient:H.v('or'),margin:+H.v('m')}),note:parts.length+' pages'}]}},
-merge:{title:'Merge PDFs',nav:'Merge',icon:'layers',grad:'#fbbf24,#f97316',desc:'Multiple PDFs ko ek me combine karo, order apne hisaab se.',accept:'.pdf,application/pdf',multiple:true,reorder:true,run:'Merge PDFs',
+merge:{title:'Merge PDFs',nav:'Merge',icon:'layers',grad:'#fbbf24,#f97316',desc:'Multiple PDFs ko ek me combine karo, order apne hisaab se.',accept:'.pdf,application/pdf',multiple:true,reorder:true,btn:'Merge PDFs',
  opts:id=>'<div class="f"><label>Output name</label><input type="text" id="'+id+'-o-nm" value="Dialln-merged"></div>',
  async run(files,H){needLibs(true);if(files.length<2)throw new Error('Kam se kam 2 PDF chahiye.');const doc=await PDFLib.PDFDocument.create();
   for(let i=0;i<files.length;i++){H.p(i/files.length,'Merging '+files[i].name);let src;try{src=await PDFLib.PDFDocument.load(await files[i].arrayBuffer())}catch(e){throw new Error('"'+files[i].name+'" open nahi hui (protected ho sakti hai — pehle unlock karo).')}
@@ -1960,7 +1960,7 @@ const COLORBOX='style="width:100%;height:44px;border-radius:12px;border:1px soli
 const dimBy=(id,map)=>{for(const k in map){const el=$('#'+id+'-'+k);if(el)el.classList.toggle('dim',!map[k])}};
 
 /* ---------- Background remover ---------- */
-TOOLS.bgremove={title:'Background Remover',nav:'BG Remove',icon:'wand',grad:'#22d3ee,#2563ff',desc:'Photo ka background ek tap me hatao — transparent PNG ya apna colour lagao.',accept:'image/*,.svg,.heic,.heif',multiple:true,run:'Remove background',hint:'Photos',
+TOOLS.bgremove={title:'Background Remover',nav:'BG Remove',icon:'wand',grad:'#22d3ee,#2563ff',desc:'Photo ka background ek tap me hatao — transparent PNG ya apna colour lagao.',accept:'image/*,.svg,.heic,.heif',multiple:true,btn:'Remove background',hint:'Photos',
  opts:id=>`<div class="f"><label>Method</label><select id="${id}-o-mode"><option value="ai">AI — best for people, products, animals</option><option value="color">Colour key — offline, plain backgrounds</option></select></div>
  <div class="f" id="${id}-aq"><label>AI quality</label><select id="${id}-o-q"><option value="isnet_fp16">High (slower, ~80 MB first time)</option><option value="isnet_quint8">Fast (~40 MB first time)</option></select></div>
  <div class="f" id="${id}-kf"><label>Colour to remove</label><select id="${id}-o-key"><option value="auto">Auto (detect from edges)</option><option value="custom">Pick colour…</option></select></div>
@@ -1989,7 +1989,7 @@ TOOLS.bgremove={title:'Background Remover',nav:'BG Remove',icon:'wand',grad:'#22
 
 /* ---------- Photo resizer ---------- */
 const PRESETS=[['','Custom size'],['1080x1080','Instagram post 1080×1080'],['1080x1350','Instagram portrait 1080×1350'],['1080x1920','Story / Reel 1080×1920'],['1280x720','YouTube thumbnail 1280×720'],['500x500','WhatsApp DP 500×500'],['413x531','Passport photo 35×45 mm (300 dpi)'],['1920x1080','Full HD 1920×1080'],['3840x2160','4K 3840×2160'],['820x312','Facebook cover 820×312'],['1500x500','Twitter / X header 1500×500'],['1584x396','LinkedIn banner 1584×396'],['1240x1754','A4 @ 150 dpi 1240×1754'],['2480x3508','A4 @ 300 dpi 2480×3508']];
-TOOLS.resize={title:'Photo Resizer & Editor',nav:'Resize',icon:'resize',grad:'#f472b6,#a855f7',desc:'Resize, crop, rotate, flip — social presets ya exact pixels, exact KB target ke saath.',accept:'image/*,.svg,.heic,.heif',multiple:true,run:'Apply to all',hint:'Photos',
+TOOLS.resize={title:'Photo Resizer & Editor',nav:'Resize',icon:'resize',grad:'#f472b6,#a855f7',desc:'Resize, crop, rotate, flip — social presets ya exact pixels, exact KB target ke saath.',accept:'image/*,.svg,.heic,.heif',multiple:true,btn:'Apply to all',hint:'Photos',
  opts:id=>`<div class="f"><label>Resize by</label><select id="${id}-o-mode"><option value="preset">Preset size</option><option value="px">Exact pixels</option><option value="pct">Percentage</option><option value="none">Keep size</option></select></div>
  <div class="f" id="${id}-pr"><label>Preset</label><select id="${id}-o-pre">${PRESETS.slice(1).map(p=>'<option value="'+p[0]+'">'+p[1]+'</option>').join('')}</select></div>
  <div class="f" id="${id}-wf"><label>Width (px)</label><input type="number" id="${id}-o-w" min="1" placeholder="auto"></div>
@@ -2024,7 +2024,7 @@ TOOLS.resize={title:'Photo Resizer & Editor',nav:'Resize',icon:'resize',grad:'#f
   return out}};
 
 /* ---------- OCR ---------- */
-TOOLS.ocr={title:'Text Extractor (OCR)',nav:'OCR',icon:'text',grad:'#34d399,#06b6d4',desc:'Photo, scan ya PDF se text nikalo — English aur Hindi. Copy karo ya .txt me save karo.',accept:'image/*,.svg,.heic,.heif,.pdf,application/pdf',multiple:true,run:'Extract text',hint:'Images / PDF',
+TOOLS.ocr={title:'Text Extractor (OCR)',nav:'OCR',icon:'text',grad:'#34d399,#06b6d4',desc:'Photo, scan ya PDF se text nikalo — English aur Hindi. Copy karo ya .txt me save karo.',accept:'image/*,.svg,.heic,.heif,.pdf,application/pdf',multiple:true,btn:'Extract text',hint:'Images / PDF',
  opts:id=>`<div class="f"><label>Language</label><select id="${id}-o-lang"><option value="eng">English</option><option value="hin">Hindi (हिन्दी)</option><option value="eng+hin" selected>English + Hindi</option></select></div><div class="f"><label>PDF pages to read</label><select id="${id}-o-pp"><option value="10">First 10 pages</option><option value="30">First 30 pages</option><option value="200">All (slow)</option></select></div>`,
  note:'Pehli baar language data internet se download hota hai (10–30 MB), uske baad cache ho jata hai. Image jitni saaf aur seedhi hogi, text utna sahi aayega — Doc Scanner se clean scan karke yahan use karo.',
  async run(files,H){const out=[],lang=H.v('lang'),maxp=+H.v('pp');
@@ -2062,7 +2062,7 @@ TOOLS.unlock.run=async function(files,H){const out=[],pw=H.v('pw')||'';needLibs(
  return out};
 
 /* ---------- PDF protect ---------- */
-TOOLS.protect={title:'PDF Password Protect',nav:'Protect',icon:'lock',grad:'#fbbf24,#ef4444',desc:'PDF par password lagao — bina password ke koi kholne nahi payega.',accept:'.pdf,application/pdf',multiple:true,run:'Protect PDF',
+TOOLS.protect={title:'PDF Password Protect',nav:'Protect',icon:'lock',grad:'#fbbf24,#ef4444',desc:'PDF par password lagao — bina password ke koi kholne nahi payega.',accept:'.pdf,application/pdf',multiple:true,btn:'Protect PDF',
  opts:id=>`<div class="f"><label>Set password</label><input type="password" id="${id}-o-pw" autocomplete="new-password" placeholder="Choose a strong password"></div><div class="f"><label>Confirm password</label><input type="password" id="${id}-o-pw2" autocomplete="new-password" placeholder="Type it again"></div><div class="f"><label>Permissions</label><label class="ck"><input type="checkbox" id="${id}-o-print" checked> Allow printing</label><label class="ck"><input type="checkbox" id="${id}-o-copy"> Allow copying text</label></div>`,
  note:'Password yaad rakho — bhoolne par recover nahi hoga. 128/256-bit PDF encryption use hoti hai.',
  async run(files,H){needLibs(true);const pw=H.v('pw'),out=[];if(!pw)throw new Error('Pehle password likho.');if(pw!==H.v('pw2'))throw new Error('Dono password match nahi kar rahe.');
@@ -2072,7 +2072,7 @@ TOOLS.protect={title:'PDF Password Protect',nav:'Protect',icon:'lock',grad:'#fbb
   return out}};
 
 /* ---------- PDF page tools ---------- */
-TOOLS.pdftools={title:'PDF Page Tools',nav:'PDF Tools',icon:'scissors',grad:'#a78bfa,#6366f1',desc:'Split, extract, delete, rotate pages — page numbers aur PDF se text extract.',accept:'.pdf,application/pdf',multiple:true,run:'Apply',
+TOOLS.pdftools={title:'PDF Page Tools',nav:'PDF Tools',icon:'scissors',grad:'#a78bfa,#6366f1',desc:'Split, extract, delete, rotate pages — page numbers aur PDF se text extract.',accept:'.pdf,application/pdf',multiple:true,btn:'Apply',
  opts:id=>`<div class="f"><label>What do you want to do?</label><select id="${id}-o-mode"><option value="extract">Extract pages</option><option value="delete">Delete pages</option><option value="split">Split into single pages</option><option value="rotate">Rotate pages</option><option value="numbers">Add page numbers</option><option value="text">Extract text (.txt)</option></select></div>
  <div class="f" id="${id}-rf"><label>Pages (e.g. 1-3,5,8-)</label><input type="text" id="${id}-o-range" placeholder="1-3,5,8-"></div>
  <div class="f" id="${id}-af"><label>Rotate by</label><select id="${id}-o-ang"><option value="90">90° clockwise</option><option value="180">180°</option><option value="270">90° anticlockwise</option></select></div>
@@ -2116,7 +2116,7 @@ const WMBASE=new WeakMap();let wmTimer=0,wmSeq=0;
 async function wmBase(f){if(WMBASE.has(f))return WMBASE.get(f);let c;if(isPdf(f)){const pdf=await openPdf(f);c=(await renderPage(pdf,1,1.3)).canvas}else{const L=await loadImg(f);c=drawToCanvas(L.img,L.w,L.h,1000);URL.revokeObjectURL(L.url)}WMBASE.set(f,c);return c}
 function wmPreview(id,files){clearTimeout(wmTimer);const card=$('#'+id+'-pvc');if(!files||!files.length){card.hidden=true;return}wmTimer=setTimeout(async()=>{const my=++wmSeq,note=$('#'+id+'-pvn');try{const base=await wmBase(files[0]);const o=wmOpts();let mk;try{mk=await wmMark(o)}catch(e){mk=null}if(my!==wmSeq)return;const cv=$('#'+id+'-pv');cv.width=base.width;cv.height=base.height;const x=cv.getContext('2d');x.drawImage(base,0,0);if(mk)wmDraw(x,cv.width,cv.height,mk,o);card.hidden=false;note.textContent=mk?(files[0].name+(files.length>1?' (+'+(files.length-1)+' more)':'')):'Logo chuno — preview yahan dikhega'}catch(e){card.hidden=false;note.textContent='Preview nahi bana: '+(e.message||e)}},120)}
 
-TOOLS.watermark={title:'Watermark Studio',nav:'Watermark',icon:'stamp',grad:'#f59e0b,#ec4899',desc:'PDF ya photo par text / logo watermark — center, corner ya poore page par tile pattern, live preview ke saath.',accept:'image/*,.svg,.heic,.heif,.pdf,application/pdf',multiple:true,run:'Apply watermark',hint:'PDF files / Photos',pv:true,
+TOOLS.watermark={title:'Watermark Studio',nav:'Watermark',icon:'stamp',grad:'#f59e0b,#ec4899',desc:'PDF ya photo par text / logo watermark — center, corner ya poore page par tile pattern, live preview ke saath.',accept:'image/*,.svg,.heic,.heif,.pdf,application/pdf',multiple:true,btn:'Apply watermark',hint:'PDF files / Photos',pv:true,
  opts:id=>`<div class="f"><label>Watermark type</label><select id="${id}-o-type"><option value="text">Text</option><option value="image">Logo / Image</option></select></div>
  <div class="f" id="${id}-tx"><label>Text (multi-line ok, Hindi bhi)</label><textarea id="${id}-o-text" rows="2" class="ta" style="min-height:64px">CONFIDENTIAL</textarea></div>
  <div class="f" id="${id}-fn"><label>Font style</label><select id="${id}-o-font"><option value="sans">Modern sans</option><option value="serif">Classic serif</option><option value="mono">Monospace</option><option value="hand">Handwritten</option></select></div>
@@ -2154,7 +2154,7 @@ function buildTool(id,cfg){
  '<div class="card drop" id="'+id+'-drop" tabindex="0"><div><div class="ui">'+I('upload',30)+'</div><b>Tap to choose files or drag &amp; drop</b><small>'+(cfg.hint||(cfg.accept.indexOf('pdf')>-1&&cfg.accept.indexOf('image')<0?'PDF files':'Image files'))+' &middot; multiple allowed</small></div><input type="file" id="'+id+'-in" accept="'+cfg.accept+'" multiple hidden></div>'+
  '<div class="card" id="'+id+'-fc" hidden><div class="rowhead"><h3>Selected files</h3><button class="btn sm" id="'+id+'-clr">Clear all</button></div><div class="flist" id="'+id+'-list"></div></div>'+
  (cfg.pv?'<div class="card" id="'+id+'-pvc" hidden><div class="rowhead"><h3>Live preview</h3><small id="'+id+'-pvn" style="color:var(--muted)"></small></div><div class="pvbox2"><canvas id="'+id+'-pv"></canvas></div></div>':'')+'<div class="card" id="'+id+'-oc"><div class="opts">'+cfg.opts(id)+'</div>'+(cfg.note?'<div class="note">'+cfg.note+'</div>':'')+'</div>'+
- '<button class="btn primary big" id="'+id+'-run" disabled>'+I('zap',20)+' '+cfg.run+'</button>'+
+ '<button class="btn primary big" id="'+id+'-run" disabled>'+I('zap',20)+' '+cfg.btn+'</button>'+
  '<div class="prog" id="'+id+'-pg" hidden><div class="bar"><i></i></div><span></span></div><div class="card" id="'+id+'-res" hidden></div>';
  const drop=$('#'+id+'-drop'),inp=$('#'+id+'-in'),list=$('#'+id+'-list');
  const add=fl=>{[...fl].forEach(f=>{if(!f.size)return;const ok=cfg.accept.indexOf('pdf')>-1&&isPdf(f)||(cfg.accept.indexOf('image')>-1&&(f.type.startsWith('image/')||/\.(svg|jpe?g|png|gif|webp|bmp|avif|ico|heic|heif)$/i.test(f.name)));if(!ok){toast('Skipped: '+f.name+' (unsupported)','err');return}st.files.push({file:f,url:(f.type.startsWith('image/')||/\.svg$/i.test(f.name))&&!isHeic(f)?URL.createObjectURL(f):null})});draw()};
