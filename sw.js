@@ -1,5 +1,5 @@
-/* Dialln Converter — offline cache */
-const VER='dialln-v2';
+/* D Docs — offline cache */
+const VER='dialln-v4';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./maskable-512.png','./apple-touch-icon.png'];
 const ENGINE_HOSTS=['cdn.jsdelivr.net','cdnjs.cloudflare.com','staticimgly.com'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VER).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
